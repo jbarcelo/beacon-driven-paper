@@ -618,6 +618,9 @@ It is likely that transmissions overlap and interfere with each other.
 A completely random MAC protocol will not offer satisfactory performance.
 Some kind of coordination among neighboring nodes is needed.
 
+\section{Related Work}
+\cite{cano2013iri}
+
 \section{IEEE 802.11s Mesh Beacon Collision Avoidance}
 A Mesh Beacon Collision Avoidance (MBCA) is described in \cite{hiertz2007pis}.
 The solution consists of sometimes delaying the beacon transmission to check for possible overlapping transmissions among the one-hop neighbours.
@@ -668,16 +671,17 @@ Given the interference graph, the problem reduces to map coloring problem.
 We are interested in solving this problem in a decentralized way, as there is no central entity that has the global visual of the network and can magically configure all the nodes.
 Only \emph{after} the problem has been solved, the network will work and the administrator will be able to collect topology data and remotely configure the network.
 
-Decentralized Constraint Satisfaction \cite{} is a promising alternative to address the problem.
-The constraints are that no pair of nodes connected by an arc in the interference graph should use the same color.
-
+In order to solve this problem in a decentralized way, we need that the nodes keep trying different colours until a solution is found.
+To be more specific, a node will pick the same color if none of its neighbours has picked that particular color.
+Otherwise it will change the color.
 
 \section{The construction of a beacon schedule}
 
 Each station picks a random position in the schedule.
 If it receives confirmation from all of its neighbors, it assumes that no collisions have occurred and keeps transmitting at that position.
-Otherwise
+This means that no other neighbor in the two-hop neighborhood has picked the same color.
 
+If a node in the two-node neighborhood pick the same color, the node that is a common neighbor of both will not receive the beacon and therefore will not confirm the correct reception.
 
 
 
@@ -746,7 +750,7 @@ Otherwise
 \section*{Acknowledgment}
 
 
-The authors would like to thank Victor Dalmau and Luis Sanabria for their helpful comments.
+The authors would like to thank ...
 
 
 % Can use something like this to put references on a page
