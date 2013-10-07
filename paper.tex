@@ -715,13 +715,48 @@ A position with collision is assumed to be occupied.
 To this extend it is necessary that the nodes can use energy detection to determine that a position is occupied.
 
 The nodes share this information with their neighbours and then adjusts its own schedule according to the following rules.
-\begin{iteration}
+\begin{itemize}
 \item The schedule is doubled if any of the neighbours report occupation equal to 100\%.
 \item The schedule is doubled halved if all the neighbors report occupation higher than 75\%.
 \item The schedule is halved if all the neighbors report occupation lower than 25\%.
-\end{iteration}
+\end{itemize}
+
+\section{Data Included in the Beacons}
+In each beacon, a node includes acknowledgements off all the beacons received in the last schedule, including their position.
+
+For example, node A in Fig.~\ref{fig:topology} in its second transmission in Fig.~\ref{fig:timeline} includes the following information (assuming that it has received all the beacons correctly):
+\begin{itemize}
+\item Position 0: empty beacon
+\item Position 1: beacon B
+\item Position 2: beacon F
+\item Position 3: beacon A
+\end{itemize}
+
+Each node also includes information of the data that it has stored in its queues for each of its neighbours.
+\begin{itemize}
+\item Position 0: empty beacon
+\item Position 1: beacon B, 2 outstanding packets
+\item Position 2: beacon F, 0 outstanding packets
+\item Position 3: beacon A
+\end{itemize}
+
+A \emph{free flag}.
+If a station has no data to transmit and no data to receive, it activates the free flag to indicate its neighbours that they can compete for the medium.
+
+Acknowledgements of all the packets received since the previous beacon.
 
 \section{The Medium Access Control Protocol}
+Each station owns the time that follows its beacon until the next beacon spot.
+It can use this time to transmit packets to its neighbours and to request packets from its neighbours using \emph{poll} packets.
+
+A station can also indicate that it is not going to use the time that it owns using the free flag.
+
+After empty beacon spots and after beacons with an activated free flag, stations are allowed to contend for the medium using CSMA/CA.
+During this contention, they are exposed to hidden terminal collisions.
+
+Note that packet transmission is not immediately followed by an acknowledgement as in traditional CSMA/CA.
+Acknowledgements are delayed and transmitted together with beacons.
+
 \section{Conclusion}
 \label{sec:conclusion}
 
