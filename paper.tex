@@ -757,6 +757,29 @@ During this contention, they are exposed to hidden terminal collisions.
 Note that packet transmission is not immediately followed by an acknowledgement as in traditional CSMA/CA.
 Acknowledgements are delayed and transmitted together with beacons.
 
+\subsection{An Example}
+An example of medium access is presented in Fig.~\ref{fig:medium-access}.
+It shows the access to the medium from the point of view of station A.
+After transmitting its beacon, station A is free to transmit and request packets from and to its neighbours.
+In this particular example A transmits a packet to A and then a packet to B.
+Then, it uses its remaining time to request and receive two packets from A.
+The two packets are requested in the poll message.
+
+The next beacon spot is free from A's point of view.
+Therefore A can contend for the medium using CSMA/CA and in this transmission it is exposed to the hidden terminal interference.
+
+Even though it is not shown in the figure, at a later time B transmits its beacon. 
+Then A has to remain silent unless B explicitly requests a packet from A using a poll.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{figures/medium-access}
+  \caption{Medium Access}
+  \label{fig:medium-access}
+\end{figure}
+
+
+
 \section{Conclusion}
 \label{sec:conclusion}
 
