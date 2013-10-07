@@ -638,10 +638,10 @@ If the beacons are delayed frequently, additional randomness is introduced that 
 \section{Assumptions}
 We model the network topology as a graph.
 In the topology graph, the nodes represent wireless stations and the arcs between two nodes mean that those nodes can communicate with each other.
-If a node has two neighbours transmitting simultaneously, it is assume that the messages are garbled an lost.
+If a node has two neighbours transmitting simultaneously, it is assumed that the messages are garbled an lost.
 A node can only detect and receive the transmissions of its immediate neighbours, and only if there is a single neighbour active.
 
-In reality, wireless propagation is much more complicated.
+These are strong assumptions because, in reality, wireless propagation is much more complicated.
 The carrier sense range exceeds the transmission range and there is capture effect.
 There are a large number of factors that determine whether a transmission is successful or not.
 Nevertheless, for tractability, we use the above described graph model.
@@ -663,17 +663,31 @@ When a station $A$ receives beacons from all its neighbors confirming that they 
 The challenge is to construct a schedule in such a way that all the neighbors of a station can listen to its beacon.
 When such schedule is successfully constructed, all the nodes will receive confirmation of successful reception of its beacon from all neighboring stations.
 
+\begin{figure}
+  \centering
+  \includegraphics[width=2.5in]{figures/topology}
+  \caption{Topology}
+  \label{fig:topology}
+\end{figure}
+
 \section{The interference graph}
 From the topology graph we derive the interference graph.
 There is an arc between two nodes the simultaneous transmission of those two nodes results in interference.
 Given the interference graph, the problem reduces to map coloring problem.
 
-We are interested in solving this problem in a decentralized way, as there is no central entity that has the global visual of the network and can magically configure all the nodes.
+We are interested in solving this problem in a decentralized way, as there is no central entity that has the global vision of the network and can magically configure all the nodes.
 Only \emph{after} the problem has been solved, the network will work and the administrator will be able to collect topology data and remotely configure the network.
 
 In order to solve this problem in a decentralized way, we need that the nodes keep trying different colours until a solution is found.
 To be more specific, a node will pick the same color if none of its neighbours has picked that particular color.
 Otherwise it will change the color.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=2.5in]{figures/interference}
+  \caption{Interference}
+  \label{fig:interference}
+\end{figure}
 
 \section{The construction of a beacon schedule}
 
@@ -685,6 +699,29 @@ If a node in the two-node neighborhood pick the same color, the node that is a c
 
 
 
+\begin{figure}
+  \centering
+  \includegraphics[width=\linewidth]{figures/timeline}
+  \caption{Timeline}
+  \label{fig:timeline}
+\end{figure}
+
+\section{Distributed Adjustment of the Schedule Length}
+The beacon interval $T_b$ is the same for all the participating stations in the network and is set by the standard or network administrator.
+The schedule length should be adjusted according to the node density.
+
+Each node collects information of its perception of the schedule occupation $O$, which is the ratio between occupied positions and total positions.
+A position with collision is assumed to be occupied. 
+To this extend it is necessary that the nodes can use energy detection to determine that a position is occupied.
+
+The nodes share this information with their neighbours and then adjusts its own schedule according to the following rules.
+\begin{iteration}
+\item The schedule is doubled if any of the neighbours report occupation equal to 100\%.
+\item The schedule is doubled halved if all the neighbors report occupation higher than 75\%.
+\item The schedule is halved if all the neighbors report occupation lower than 25\%.
+\end{iteration}
+
+\section{The Medium Access Control Protocol}
 \section{Conclusion}
 \label{sec:conclusion}
 
