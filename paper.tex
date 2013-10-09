@@ -688,13 +688,13 @@ When such schedule is successfully constructed, all the nodes will receive confi
 \subsection{The Interference Graph}
 From the topology graph we derive the interference graph.
 In the interference graph, there is an arc between two nodes the simultaneous transmission of those two nodes results in interference.
-Given the interference graph, the problem finding the collision-free schedule of beacons reduces to map coloring problem.
+Given the interference graph, the problem finding the collision-free schedule of beacons reduces to a map coloring problem.
 
 We are interested in solving this problem in a decentralized way, as there is no central entity that has the global vision of the network and can magically configure all the nodes.
-Only \emph{after} the problem has been solved, the network will work and the administrator will be able to collect topology data and remotely configure the network.
+Only \emph{after} the problem has been solved, the network will work and it would be possible for a central point to gather all the information and remotely configure the nodes.
 
-In order to solve this problem in a decentralized way, we need that the nodes keep trying different colours until a solution is found.
-To be more specific, a node will pick the same color if none of its neighbours has picked that particular color.
+In order to solve this problem in a decentralized way, we need that the nodes keep trying different spots (or colours) until a solution is found.
+%To be more specific, a node will pick the same color if none of its neighbours has picked that particular color.
 Otherwise it will change the color.
 
 \begin{figure}
@@ -706,11 +706,14 @@ Otherwise it will change the color.
 
 \subsection{The construction of a beacon schedule}
 
-Each station picks a random position in the schedule.
+Each station picks a random spot in the schedule.
 If it receives confirmation from all of its neighbors, it assumes that no collisions have occurred and keeps transmitting at that position.
 This means that no other neighbor in the two-hop neighborhood has picked the same color.
+In this case, the station will defer the transmission of the next beacon a deterministic number of spots equal to the schedule length $S$.
 
 If a node in the two-node neighborhood pick the same color, the node that is a common neighbor of both will not receive the beacon and therefore will not confirm the correct reception.
+In this case, the station will defer the transmission of the next beacon a random number of spots.
+A sensible choice is to use an uniform variable between 1 and $2S$ so that the expectation of the random variable roughly coincides with the deterministic backoff used by successful stations.
 
 
 
@@ -723,7 +726,17 @@ If a node in the two-node neighborhood pick the same color, the node that is a c
 
 \subsection{Distributed Adjustment of the Schedule Length}
 The beacon interval $T_b$ is the same for all the participating stations in the network and is set by the standard or network administrator.
-The schedule length should be adjusted according to the node density.
+In static networks, it is also possible for the administrator to set the schedule length $S$.
+However, in more dynamic environments, the administrator might only be able to set an initial value that needs to be continually adjusted as the topology changes.
+
+Note that there is no such thing as an optimal schedule length.
+Each choice of a schedule length represents a point in the trade-off between convergence speed and performance in the stationary state.
+Shorter schedules result in longer convergence time and higher efficiency when convergence is reached.
+The actual performance will depend node density, dynamics of the network and the frequency of channel errors.
+
+Here we present an heuristic oriented to provide reasonable performance by preventing two extreme cases.
+One of them occurs when in a particular neighbourhood of the network there are more stations than spots in the schedule and a collision-free schedule cannot be reached.
+The other extreme case occurs when the spots that actually contain a beacon are a small minority, and therefore the gains of the proposed approach are also minimal.
 
 Each node collects information of its perception of the schedule occupation $O$, which is the ratio between occupied positions and total positions.
 A position with collision is assumed to be occupied. 
@@ -800,6 +813,10 @@ In that paper, the construction of a collision-free schedule is studied for a se
 That paper focused on a simple scenario in which all nodes could hear each other transmissions.
 Another difference between that paper and the present letter is that here we not aim to compute a schedule length which is similar or equal to the participating nodes.
 In the present letter the schedule is independently computed by each node and therefore it is possible that different nodes use different schedule lengths.
+
+The distributed coloring of graphs has been studied in \cite{checco2012lbc} which also considered the possibility of sensing restrictions.
+In the present work we do not consider such sensing restrictions.
+Another difference is that in the present work the beginning and ending of the schedule is different for different nodes, and even the schedule length can be different for different nodes.
 
 \subsection{IEEE 802.11s Mesh Beacon Collision Avoidance}
 A Mesh Beacon Collision Avoidance (MBCA) is described in \cite{hiertz2007pis}.
