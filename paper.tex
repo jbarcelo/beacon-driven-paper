@@ -618,46 +618,61 @@ It is likely that transmissions overlap and interfere with each other.
 A completely random MAC protocol will not offer satisfactory performance.
 Some kind of coordination among neighboring nodes is needed.
 
-\section{Related Work}
-\cite{cano2013iri}
+In this paper, we propose the initial construction of a collision-free schedule of beacons.
+This process has to be decentralized as it takes place before the network is operative, which means that the participating stations can exchange data only with their neighbors.
+The construction of the schedule is an iterative trial-and-error process that continues until a collision-free schedule of beacons is built.
+At that point, it is possible for the nodes to reliable exchange information and transmit data with success guarantees.
 
-\section{IEEE 802.11s Mesh Beacon Collision Avoidance}
-A Mesh Beacon Collision Avoidance (MBCA) is described in \cite{hiertz2007pis}.
-The solution consists of sometimes delaying the beacon transmission to check for possible overlapping transmissions among the one-hop neighbours.
-It also involves including information about the timing of beacons in beacons.
 
-This approach has some shortcomings. 
-It does not prevent that two-hop neighbors choose overlapping beacon transmitting instants.
-The timing information in beacons is available only in case of successful transmission and reception.
-In the critical case in which collisions occurs and timing information is needed, it is not available.
-Delaying the beacon sometimes seems also problematic. 
-It is not impossible that the two colliding beacons choose to delay simultaneously and therefore the collision is not detected.
-If the beacons are not delayed very frequently, it takes a long time to detect the collision.
-If the beacons are delayed frequently, additional randomness is introduced that can easily result in more collisions.
 
-\section{Assumptions}
+\section{The Construction of the Collision-Free Schedule}
+
+\subsection{Assumptions}
 We model the network topology as a graph.
 In the topology graph, the nodes represent wireless stations and the arcs between two nodes mean that those nodes can communicate with each other.
-If a node has two neighbours transmitting simultaneously, it is assumed that the messages are garbled an lost.
-A node can only detect and receive the transmissions of its immediate neighbours, and only if there is a single neighbour active.
+For illustration purposes, we will use the ring topology in Fig.~\ref{fig:topology}.
 
-These are strong assumptions because, in reality, wireless propagation is much more complicated.
+If a node has two neighbours transmitting simultaneously, it is assumed that that particular node cannot decode either of the transmissions.
+For example, assume that at a given point of time nodes $F$ and $B$ in Fig.~\ref{fig:topology} are active.
+Node $A$ will be unable to recover the transmissions.
+
+Note that collisions occur at reception.
+The fact that a collision occurs at $A$ when $F$ and $B$ simultaneously transmit does not mean that $E$ or $C$ cannot recover those messages, even though they overlap in time.
+A transmission may collide in one receiver and be successful in another one.
+
+A node can only detect and receive the transmissions of its immediate neighbours, and only if there is a single neighbour is active for the whole duration of the transmission.
+
+
+These graph model represents strong assumptions because, in reality, wireless propagation is much more complicated.
 The carrier sense range exceeds the transmission range and there is capture effect.
 There are a large number of factors that determine whether a transmission is successful or not.
 Nevertheless, for tractability, we use the above described graph model.
 
-\section{A Beacon Schedule}
-A recurrent solution in wireless networks is the use of beacons for synchronization and signaling.
+\subsection{A Beacon Schedule}
+A recurrent solution in wireless networks is the use of broadcast beacons for synchronization and signaling.
 Beacon messages are very short, which means that the likelihood of collisions is lower.
 This beacons can be very useful for network coordination and management.
 
 A schedule of beacons defines special times in which beacons can be transmitted.
 Let us assume that beacons should be transmitted every $T_b$ seconds.
-Then, it is also necessary to define a schedule length $S$ which is the number of beacons in a schedule.
-Each station transmits a beacon once in every schedule in one of the $S$ allowed time instants.
-When the schedule is over, it is repeated again.
+We will name each of the time instants at which a beacon can be transmitted a \emph{spot}.
+Each spot can be either empty, successful or collision.
+Note that, again, the perception of the spot depends on the position of the station in the topology.
+For a given slot, it may happen that one station detects it as empty, another station as successful and another station as collision.
 
-A beacon includes a list of all the beacons received by the station in the last schedule.
+Then, it is also necessary to define a schedule length $S$ which is the number of spots.
+Each station transmits a beacon once in every schedule in one of the $S$ allowed spots.
+When the schedule is over, it is repeated again.
+The length of the schedule in time units is simply $T_s=S*T_b$.
+
+An example of a beacon schedule is represented in Fig.~\ref{fig:timeline}.
+The axis represents time and each of the shaded blocks represents an spot in which beacon transmissions occur.
+The dotted box is a spot in which no transmission occur.
+
+Note that the starting and ending position of the schedule is only of local significance. 
+We take the convention that each node considers the initial position of the schedule the one in which it transmits, and is numbered as zero.
+
+A beacon includes acknowledgement information for all the beacons received by the station in the last schedule.
 When a station $A$ receives beacons from all its neighbors confirming that they have received the beacon of station $A$, this station can assume that its beacon has not suffered any collision.
 
 The challenge is to construct a schedule in such a way that all the neighbors of a station can listen to its beacon.
@@ -670,10 +685,10 @@ When such schedule is successfully constructed, all the nodes will receive confi
   \label{fig:topology}
 \end{figure}
 
-\section{The interference graph}
+\subsection{The Interference Graph}
 From the topology graph we derive the interference graph.
-There is an arc between two nodes the simultaneous transmission of those two nodes results in interference.
-Given the interference graph, the problem reduces to map coloring problem.
+In the interference graph, there is an arc between two nodes the simultaneous transmission of those two nodes results in interference.
+Given the interference graph, the problem finding the collision-free schedule of beacons reduces to map coloring problem.
 
 We are interested in solving this problem in a decentralized way, as there is no central entity that has the global vision of the network and can magically configure all the nodes.
 Only \emph{after} the problem has been solved, the network will work and the administrator will be able to collect topology data and remotely configure the network.
@@ -689,7 +704,7 @@ Otherwise it will change the color.
   \label{fig:interference}
 \end{figure}
 
-\section{The construction of a beacon schedule}
+\subsection{The construction of a beacon schedule}
 
 Each station picks a random position in the schedule.
 If it receives confirmation from all of its neighbors, it assumes that no collisions have occurred and keeps transmitting at that position.
@@ -706,7 +721,7 @@ If a node in the two-node neighborhood pick the same color, the node that is a c
   \label{fig:timeline}
 \end{figure}
 
-\section{Distributed Adjustment of the Schedule Length}
+\subsection{Distributed Adjustment of the Schedule Length}
 The beacon interval $T_b$ is the same for all the participating stations in the network and is set by the standard or network administrator.
 The schedule length should be adjusted according to the node density.
 
@@ -717,11 +732,11 @@ To this extend it is necessary that the nodes can use energy detection to determ
 The nodes share this information with their neighbours and then adjusts its own schedule according to the following rules.
 \begin{itemize}
 \item The schedule is doubled if any of the neighbours report occupation equal to 100\%.
-\item The schedule is doubled halved if all the neighbors report occupation higher than 75\%.
+\item The schedule is doubled if all the neighbors report occupation higher than 75\%.
 \item The schedule is halved if all the neighbors report occupation lower than 25\%.
 \end{itemize}
 
-\section{Data Included in the Beacons}
+\subsection{Data Included in the Beacons}
 In each beacon, a node includes acknowledgements off all the beacons received in the last schedule, including their position.
 
 For example, node A in Fig.~\ref{fig:topology} in its second transmission in Fig.~\ref{fig:timeline} includes the following information (assuming that it has received all the beacons correctly):
@@ -745,7 +760,7 @@ If a station has no data to transmit and no data to receive, it activates the fr
 
 Acknowledgements of all the packets received since the previous beacon.
 
-\section{The Medium Access Control Protocol}
+\subsection{The Medium Access Control Protocol}
 Each station owns the time that follows its beacon until the next beacon spot.
 It can use this time to transmit packets to its neighbours and to request packets from its neighbours using \emph{poll} packets.
 
@@ -779,6 +794,26 @@ Then A has to remain silent unless B explicitly requests a packet from A using a
 \end{figure}
 
 
+\section{Related Work}
+An initial step in the direction we are exploring in this later was taken in \cite{cano2013iri}.
+In that paper, the construction of a collision-free schedule is studied for a sensor network.
+That paper focused on a simple scenario in which all nodes could hear each other transmissions.
+Another difference between that paper and the present letter is that here we not aim to compute a schedule length which is similar or equal to the participating nodes.
+In the present letter the schedule is independently computed by each node and therefore it is possible that different nodes use different schedule lengths.
+
+\subsection{IEEE 802.11s Mesh Beacon Collision Avoidance}
+A Mesh Beacon Collision Avoidance (MBCA) is described in \cite{hiertz2007pis}.
+The solution consists of sometimes delaying the beacon transmission to check for possible overlapping transmissions among the one-hop neighbours.
+It also involves including information about the timing of beacons in beacons.
+
+This approach has some shortcomings. 
+It does not prevent that two-hop neighbors choose overlapping beacon transmitting instants.
+The timing information in beacons is available only in case of successful transmission and reception.
+In the critical case in which collisions occurs and timing information is needed, it is not available.
+Delaying the beacon sometimes seems also problematic. 
+It is not impossible that the two colliding beacons choose to delay simultaneously and therefore the collision is not detected.
+If the beacons are not delayed very frequently, it takes a long time to detect the collision.
+If the beacons are delayed frequently, additional randomness is introduced that can easily result in more collisions.
 
 \section{Conclusion}
 \label{sec:conclusion}
