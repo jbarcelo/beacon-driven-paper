@@ -648,6 +648,10 @@ The carrier sense range exceeds the transmission range and there is capture effe
 There are a large number of factors that determine whether a transmission is successful or not.
 Nevertheless, for tractability, we use the above described graph model.
 
+We also consider synchronization out of the scope of the present paper.
+Even though beacons can be used to synchronize the network, we will not cover the initial synchronization of clocks and posterior clock drifts.
+
+
 \subsection{A Beacon Schedule}
 A recurrent solution in wireless networks is the use of broadcast beacons for synchronization and signaling.
 Beacon messages are very short, which means that the likelihood of collisions is lower.
@@ -750,40 +754,31 @@ The nodes share this information with their neighbours and then adjusts its own 
 \end{itemize}
 
 \subsection{Data Included in the Beacons}
-In each beacon, a node includes acknowledgements off all the beacons received in the last schedule, including their position.
+In order to construct the collision-free schedule of beacons and facilitate subsequent data transmission, it is necessary to include some signaling information.
+For each spot of the schedule, the stations reports two different values: the beacon that has been received in that spot (if any) and the number of packets ready to send to that particular destination.
 
-For example, node A in Fig.~\ref{fig:topology} in its second transmission in Fig.~\ref{fig:timeline} includes the following information (assuming that it has received all the beacons correctly):
+For example purposes we imagine that $A$ in Fig.~\ref{fig:topology} in its second transmission in Fig.~\ref{fig:timeline} has correctly received the beacons from its neighbours $B$ and $F$, and has two outstanding packets for $B$ in its queues.
+Then, the data information in the beacon includes:
 \begin{itemize}
-\item Position 0: empty beacon
-\item Position 1: beacon B
-\item Position 2: beacon F
-\item Position 3: beacon A
+\item Position 1: empty beacon
+\item Position 2: acknowledgement for beacon B, 2 outstanding packets for B
+\item Position 3: acknowledgement for beacon F, 0 outstanding packets for F
 \end{itemize}
 
-Each node also includes information of the data that it has stored in its queues for each of its neighbours.
-\begin{itemize}
-\item Position 0: empty beacon
-\item Position 1: beacon B, 2 outstanding packets
-\item Position 2: beacon F, 0 outstanding packets
-\item Position 3: beacon A
-\end{itemize}
-
-A \emph{free flag}.
-If a station has no data to transmit and no data to receive, it activates the free flag to indicate its neighbours that they can compete for the medium.
-
-Acknowledgements of all the packets received since the previous beacon.
+Additionally, each station also includes beacons for all the received data packets since the last beacon by that station.
+This is a difference with respect to typical IEEE 802.11 implementation in which data acknowledgement is sent right after the correct reception.
+As the acknowledgement is sent by the receiver of the data, it interferes with different transmissions than the original data.
+These short acknowledgement packets can have devastating effects if they destroy a long data packets.
+Furthermore, the acknowledgement requires a short inter-frame interval to account for the round-trip time and the time required for the hardware to switch from reception to transmission.
+For these reasons, it is better to delay the transmission of the acks and send them all together in the beacon.
 
 \subsection{The Medium Access Control Protocol}
 Each station owns the time that follows its beacon until the next beacon spot.
 It can use this time to transmit packets to its neighbours and to request packets from its neighbours using \emph{poll} packets.
+When the station is finished with transmitting and receiving packets, it sends a short \emph{done} packet that allows its neighbours to contend for the medium using CSMA/ECA.
 
-A station can also indicate that it is not going to use the time that it owns using the free flag.
-
-After empty beacon spots and after beacons with an activated free flag, stations are allowed to contend for the medium using CSMA/CA.
-During this contention, they are exposed to hidden terminal collisions.
-
-Note that packet transmission is not immediately followed by an acknowledgement as in traditional CSMA/CA.
-Acknowledgements are delayed and transmitted together with beacons.
+The medium is also open for contention after \emph{free} beacon spots.
+A station that detects that one of the beacon spots is not use for its neighbours can use CSMA/ECA to send packets to its neighbours.
 
 \subsection{An Example}
 An example of medium access is presented in Fig.~\ref{fig:medium-access}.
