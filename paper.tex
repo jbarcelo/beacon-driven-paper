@@ -804,6 +804,9 @@ Then A has to remain silent unless B explicitly requests a packet from A using a
 
 
 \section{Related Work}
+A first attempt of a collision-free MAC protocol for multi-hop wireless networks appeared in \cite{barcelo2013dcc}.
+That solution does not use beacons, and therefore the convergence is slower and the efficiency is lower.
+
 An initial step in the direction we are exploring in this later was taken in \cite{cano2013iri}.
 In that paper, the construction of a collision-free schedule is studied for a sensor network.
 That paper focused on a simple scenario in which all nodes could hear each other transmissions.
@@ -827,6 +830,8 @@ Delaying the beacon sometimes seems also problematic.
 It is not impossible that the two colliding beacons choose to delay simultaneously and therefore the collision is not detected.
 If the beacons are not delayed very frequently, it takes a long time to detect the collision.
 If the beacons are delayed frequently, additional randomness is introduced that can easily result in more collisions.
+
+
 
 \section{Discussion}
 The proposed protocol has some shortcoming such as requiring periodical beacons that fragment and consume channel time, the possibility of unfairness if different nodes choose different schedule length, and the requirement for the stations to hold the packets longer in their queues due to the delayed acknowledgements.
