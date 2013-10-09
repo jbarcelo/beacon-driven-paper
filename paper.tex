@@ -770,6 +770,7 @@ This is a difference with respect to typical IEEE 802.11 implementation in which
 As the acknowledgement is sent by the receiver of the data, it interferes with different transmissions than the original data.
 These short acknowledgement packets can have devastating effects if they destroy a long data packets.
 Furthermore, the acknowledgement requires a short inter-frame interval to account for the round-trip time and the time required for the hardware to switch from reception to transmission.
+Channel time fragmentation is explained in \cite{barcelo2013dcc}
 For these reasons, it is better to delay the transmission of the acks and send them all together in the beacon.
 
 \subsection{The Medium Access Control Protocol}
@@ -827,7 +828,11 @@ It is not impossible that the two colliding beacons choose to delay simultaneous
 If the beacons are not delayed very frequently, it takes a long time to detect the collision.
 If the beacons are delayed frequently, additional randomness is introduced that can easily result in more collisions.
 
-\section{Conclusion}
+\section{Discussion}
+The proposed protocol has some shortcoming such as requiring periodical beacons that fragment and consume channel time, the possibility of unfairness if different nodes choose different schedule length, and the requirement for the stations to hold the packets longer in their queues due to the delayed acknowledgements.
+Nevertheless, the protocol also offers interesting aspects.
+In particular, each station owns a fraction of the channel time in which it can transmit without contention and without hidden problems.
+The reserved channel time that is not consumed is freed for so that other stations can use it.
 \label{sec:conclusion}
 
 
