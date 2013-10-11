@@ -698,8 +698,6 @@ We are interested in solving this problem in a decentralized way, as there is no
 Only \emph{after} the problem has been solved, the network will work and it would be possible for a central point to gather all the information and remotely configure the nodes.
 
 In order to solve this problem in a decentralized way, we need that the nodes keep trying different spots (or colours) until a solution is found.
-%To be more specific, a node will pick the same color if none of its neighbours has picked that particular color.
-Otherwise it will change the color.
 
 \begin{figure}
   \centering
@@ -708,16 +706,25 @@ Otherwise it will change the color.
   \label{fig:interference}
 \end{figure}
 
-\subsection{The construction of a beacon schedule}
+\subsection{The Construction of a Beacon Schedule}
 
-Each station picks a random spot in the schedule.
-If it receives confirmation from all of its neighbors, it assumes that no collisions have occurred and keeps transmitting at that position.
-This means that no other neighbor in the two-hop neighborhood has picked the same color.
-In this case, the station will defer the transmission of the next beacon a deterministic number of spots equal to the schedule length $S$.
+When a station joins the networks it listens for a time $T_s$ to discover its neighbours.
+After that it picks one the spots that seem to be empty: one that is not used in the two-hop neighbourhood.
+When the joining station has transmitted one beacon, it has to listen to the $S-1$ spots and verify that all the neighbours acknowledge the beacon of the joining station.
+If they do, the network is fine and joining station transmits again in the $S$-th slot.
 
-If a node in the two-node neighborhood pick the same color, the node that is a common neighbor of both will not receive the beacon and therefore will not confirm the correct reception.
-In this case, the station will defer the transmission of the next beacon a random number of spots.
-A sensible choice is to use an uniform variable between 1 and $2S$ so that the expectation of the random variable roughly coincides with the deterministic backoff used by successful stations.
+Otherwise, it the beacon of the joining station is not acknowledged by one or more neighbours, the joining station will transmit in a random slot between $S$ and $2S-1$.
+This patron keeps repeating as long as there are stations that don't see their beacon acknowledged.
+
+
+%Each station picks a random spot in the schedule.
+%If it receives confirmation from all of its neighbors, it assumes that no collisions have occurred and keeps transmitting at that position.
+%This means that no other neighbor in the two-hop neighborhood has picked the same color.
+%In this case, the station will defer the transmission of the next beacon a deterministic number of spots equal to the schedule length $S$.
+
+%If a node in the two-node neighborhood pick the same color, the node that is a common neighbor of both will not receive the beacon and therefore will not confirm the correct reception.
+%In this case, the station will defer the transmission of the next beacon a random number of spots.
+%A sensible choice is to use an uniform variable between 1 and $2S$ so that the expectation of the random variable roughly coincides with the deterministic backoff used by successful stations.
 
 
 
