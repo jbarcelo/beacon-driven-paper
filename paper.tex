@@ -643,7 +643,7 @@ A transmission may collide in one receiver and be successful in another one.
 A node can only detect and receive the transmissions of its immediate neighbours, and only if there is a single neighbour is active for the whole duration of the transmission.
 
 
-These graph model represents strong assumptions because, in reality, wireless propagation is much more complicated.
+This graph model represents strong assumptions because, in reality, wireless propagation is much more complicated.
 The carrier sense range exceeds the transmission range and there is capture effect.
 There are a large number of factors that determine whether a transmission is successful or not.
 Nevertheless, for tractability, we use the above described graph model.
@@ -674,12 +674,12 @@ The axis represents time and each of the shaded blocks represents an spot in whi
 The dotted box is a spot in which no transmission occur.
 
 Note that the starting and ending position of the schedule is only of local significance. 
-We take the convention that each node considers the initial position of the schedule the one in which it transmits, and is numbered as zero.
+We take the convention that each node considers the initial position of the schedule the one in which it has transmitted, and is numbered as zero.
 
 A beacon includes acknowledgement information for all the beacons received by the station in the last schedule.
 When a station $A$ receives beacons from all its neighbors confirming that they have received the beacon of station $A$, this station can assume that its beacon has not suffered any collision.
 
-The challenge is to construct a schedule in such a way that all the neighbors of a station can listen to its beacon.
+The challenge is to construct a schedule in such a way that all the stations can hear the beacons of all their neighbours.
 When such schedule is successfully constructed, all the nodes will receive confirmation of successful reception of its beacon from all neighboring stations.
 
 \begin{figure}
@@ -691,7 +691,7 @@ When such schedule is successfully constructed, all the nodes will receive confi
 
 \subsection{The Interference Graph}
 From the topology graph we derive the interference graph.
-In the interference graph, there is an arc between two nodes the simultaneous transmission of those two nodes results in interference.
+In the interference graph, there is an arc between two nodes if the simultaneous transmission of those two nodes results in interference.
 Given the interference graph, the problem finding the collision-free schedule of beacons reduces to a map coloring problem.
 
 We are interested in solving this problem in a decentralized way, as there is no central entity that has the global vision of the network and can magically configure all the nodes.
