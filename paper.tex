@@ -673,8 +673,8 @@ An example of a beacon schedule is represented in Fig.~\ref{fig:timeline}.
 The axis represents time and each of the shaded blocks represents an spot in which beacon transmissions occur.
 The dotted box is a spot in which no transmission occur.
 
-Note that the starting and ending position of the schedule is only of local significance. 
-We take the convention that each node considers the initial position of the schedule the one in which it has transmitted, and is numbered as zero.
+%Note that the starting and ending position of the schedule is only of local significance. 
+%We take the convention that each node considers the initial position of the schedule the one in which it has transmitted, and is numbered as zero.
 
 A beacon includes acknowledgement information for all the beacons received by the station in the last schedule.
 When a station $A$ receives beacons from all its neighbors confirming that they have received the beacon of station $A$, this station can assume that its beacon has not suffered any collision.
@@ -708,14 +708,30 @@ In order to solve this problem in a decentralized way, we need that the nodes ke
 
 \subsection{The Construction of a Beacon Schedule}
 
-When a station joins the networks it listens for a time $T_s$ to discover its neighbours.
-After that it picks one the spots that seem to be empty: one that is not used in the two-hop neighbourhood.
-When the joining station has transmitted one beacon, it has to listen to the $S-1$ spots and verify that all the neighbours acknowledge the beacon of the joining station.
-If they do, the network is fine and joining station transmits again in the $S$-th slot.
+The goal is to create a schedule of beacons is collision-free and transmitted repeatedly.
+This means that two different problems need to be solved in parallel.
+The first one is to decide when the schedule starts and ends.
+All the nodes see a succession of spots, but they do not know which is the fist one of the schedule and which is the last one.
+The second problem is that each of the nodes have to pick one spot of the agreed schedule in such a way that no interference occurs.
 
-Otherwise, it the beacon of the joining station is not acknowledged by one or more neighbours, the joining station will transmit in a random slot between $S$ and $2S-1$.
-This patron keeps repeating as long as there are stations that don't see their beacon acknowledged.
+For the first problem, a technique similar to the Spanning Tree Protocol root election can be used.
+In our problem, we want the network to distributively elect a leader that decides when the network starts and ends.
+For this purpose, each node has a value which consists of to fields. The first one is administratively configured and the second one is the MAC address of the device.
+These two fields are concatenated into a single priority field.
+The station with the lowest priority field will lead the network.
 
+At the beginning, each station thinks of itself as the leader of the network, and broadcasts its priority field in the beacons. 
+When a station receives a beacon with a priority field lower than its own, it recognizes that the lead is another station. 
+In response to this finding, the station adjusts to the schedule beginning and end of the newly received beacon and it in the next beacon it broadcasts the value that it has received and was lower than its own.
+
+For example, station $A$ transmits its beacon in position 0 of its schedule, and has a priority field 7f:08:9e:01:89:67:72.
+In position 3 or its schedule it receives a beacon with a priority field 00:60:36:dd:7f:69:ee announcing that it is spot 4.
+Then, station $A$ adjusts its state variables so that it is in state 4, it transmits in state 1 and announces 00:60:36:dd:7f:69:ee.
+This mechanism ensures that the schedule pace of the lead station is propagated through the network.
+
+To solve the second problem, an approach similar to \cite{barcelo2008lba} is used.
+A station starts by picking a random spot in the schedule.
+In the next schedule, it will 
 
 %Each station picks a random spot in the schedule.
 %If it receives confirmation from all of its neighbors, it assumes that no collisions have occurred and keeps transmitting at that position.
@@ -734,31 +750,6 @@ This patron keeps repeating as long as there are stations that don't see their b
   \caption{Timeline}
   \label{fig:timeline}
 \end{figure}
-
-\subsection{Distributed Adjustment of the Schedule Length}
-The beacon interval $T_b$ is the same for all the participating stations in the network and is set by the standard or network administrator.
-In static networks, it is also possible for the administrator to set the schedule length $S$.
-However, in more dynamic environments, the administrator might only be able to set an initial value that needs to be continually adjusted as the topology changes.
-
-Note that there is no such thing as an optimal schedule length.
-Each choice of a schedule length represents a point in the trade-off between convergence speed and performance in the stationary state.
-Shorter schedules result in longer convergence time and higher efficiency when convergence is reached.
-The actual performance will depend node density, dynamics of the network and the frequency of channel errors.
-
-Here we present an heuristic oriented to provide reasonable performance by preventing two extreme cases.
-One of them occurs when in a particular neighbourhood of the network there are more stations than spots in the schedule and a collision-free schedule cannot be reached.
-The other extreme case occurs when the spots that actually contain a beacon are a small minority, and therefore the gains of the proposed approach are also minimal.
-
-Each node collects information of its perception of the schedule occupation $O$, which is the ratio between occupied positions and total positions.
-A position with collision is assumed to be occupied. 
-To this extend it is necessary that the nodes can use energy detection to determine that a position is occupied.
-
-The nodes share this information with their neighbours and then adjusts its own schedule according to the following rules.
-\begin{itemize}
-\item The schedule is doubled if any of the neighbours report occupation equal to 100\%.
-\item The schedule is doubled if all the neighbors report occupation higher than 75\%.
-\item The schedule is halved if all the neighbors report occupation lower than 25\%.
-\end{itemize}
 
 \subsection{Data Included in the Beacons}
 In order to construct the collision-free schedule of beacons and facilitate subsequent data transmission, it is necessary to include some signaling information.
